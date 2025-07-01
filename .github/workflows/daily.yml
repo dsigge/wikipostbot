@@ -34,6 +34,7 @@ jobs:
       run: echo "${{ secrets.GOOGLE_CREDS_JSON }}" > credentials.json
 
     - name: Google API Token vorbereiten
+      shell: bash
       run: |
         echo "${{ secrets.GOOGLE_TOKEN_PICKLE }}" | base64 --decode > token.pickle
 
