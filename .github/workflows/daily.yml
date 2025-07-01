@@ -10,6 +10,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+
+    - name: Alte Screenshots löschen
+      run: rm -rf screenshots/* assets/*
+  
     - name: Repository auschecken
       uses: actions/checkout@v3
 
