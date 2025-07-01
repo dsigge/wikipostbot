@@ -1,28 +1,41 @@
-name: Daily Wikipedia Screenshot Bot
+name: Wikipostbot Daily Workflow
 
 on:
   schedule:
-    - cron: '30 7 * * *'  # Jeden Tag um 09:30 MESZ (07:30 UTC)
-  workflow_dispatch:      # Ermöglicht manuelles Starten über GitHub UI
+    - cron: '30 7 * * *'  # Täglich um 09:30 MESZ (07:30 UTC)
+  workflow_dispatch:      # Manuelles Starten möglich
 
 jobs:
-  run-script:
+  run-bot:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+    - name: Repository auschecken
+      uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'
+    - name: Python einrichten
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          playwright install
+    - name: Abhängigkeiten installieren
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        playwright install
 
-      - name: Run screenshot script
-        run: python screenshot_wikipedia.py
+    - name: Screenshots erstellen
+      run: python screenshot_wikipedia.py
+
+    - name: Instagram Assets generieren
+      run: python generate_instagram_post.py
+
+    - name: Google API Credentials vorbereiten
+      run: echo "${{ secrets.GOOGLE_CREDS_JSON }}" > credentials.json
+
+    - name: Google API Token vorbereiten
+      run: |
+        echo "${{ secrets.GOOGLE_TOKEN_PICKLE }}" | base64 --decode > token.pickle
+
+    - name: Upload zu Google Drive
+      run: python upload_to_drive.py
