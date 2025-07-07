@@ -16,7 +16,7 @@ jobs:
     - name: Alte Screenshots löschen
       run: |
         if [ -d screenshots ]; then rm -rf screenshots/*; fi
-        if [ -d assets ]; then rm -rf assets/*; fi
+        if [ -d posts ]; then rm -rf posts/*; fi
 
     - name: Python einrichten
       uses: actions/setup-python@v4
@@ -49,8 +49,6 @@ jobs:
         ls -l screenshots/
         echo "📁 Inhalt von posts/:"
         ls -l posts/
-        echo "📁 Inhalt von assets/:"
-        ls -l assets/
 
     - name: Upload zu Google Drive
       run: python upload_to_drive.py
