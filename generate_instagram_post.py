@@ -4,25 +4,7 @@ import os
 
 def embed_into_template(input_path, output_path):
     template_size = (1080, 1350)
-    
-    # Wochentag als Zahl (0=Montag, 6=Sonntag)
-    weekday = date.today().weekday()
-
-    # Deine Wunschfarben für die Wochentage Montag bis Sonntag
-    weekday_colors = [
-        (195, 223, 224),  # Montag - #C3DFE0 Light blue
-        (188, 217, 121),  # Dienstag - #BCD979 Pistachio
-        (157, 173, 111),  # Mittwoch - #9DAD6F Olivine
-        (125, 109, 97),   # Donnerstag - #7D6D61 Dim gray
-        (94, 87, 77),     # Freitag - #5E574D Walnut brown
-        (205, 197, 180),  # Samstag - #CDC5B4
-        (181, 157, 164)   # Sonntag - #B59DA4
-    ]
-    
-    background_color = weekday_colors[weekday]
-
-    # Hintergrund mit der entsprechenden Farbe anlegen
-    background = Image.new("RGB", template_size, color=background_color)
+    background = Image.new("RGB", template_size, color=(255, 255, 255))
 
     # Screenshot laden
     screenshot = Image.open(input_path)
@@ -43,6 +25,13 @@ def embed_into_template(input_path, output_path):
     today = date.today().strftime("%d.%m.%Y")
     draw.text((30, 1300), f"📅 {today}", fill=(100, 100, 100))
 
+    # Logo (optional)
+    #logo_path = "assets/wikipedia_logo.png"
+    #if os.path.exists(logo_path):
+    #    logo = Image.open(logo_path).convert("RGBA")
+    #    logo = logo.resize((80, 80))
+    #    background.paste(logo, (960, 30), logo)
+
     # Speichern
     background.save(output_path)
     print(f"✅ Gespeichert: {output_path}")
@@ -50,6 +39,9 @@ def embed_into_template(input_path, output_path):
 if __name__ == "__main__":
     today = date.today().strftime("%Y-%m-%d")
     names = ["schon_gewusst", "was_geschah", "verstorbene", "nachrichten"]
+
+    # Ordner 'posts' anlegen, falls nicht existent
+    os.makedirs("posts", exist_ok=True)
 
     for name in names:
         input_file = f"screenshots/screenshot_{name}_{today}.png"
