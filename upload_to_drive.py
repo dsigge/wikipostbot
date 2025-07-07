@@ -6,14 +6,22 @@ from googleapiclient.http import MediaFileUpload
 SCOPES = ['https://www.googleapis.com/auth/drive.file']
 
 def delete_all_files_in_folder(service, folder_id):
-    results = service.files().list(
-        q=f"'{folder_id}' in parents and trashed = false",
-        fields="files(id, name)"
-    ).execute()
-    files = results.get('files', [])
-    for file in files:
-        service.files().delete(fileId=file['id']).execute()
-        print(f"🗑️ Datei gelöscht: {file['name']} (ID: {file['id']})")
+    try:
+        results = service.files().list(
+            q=f"'{folder_id}' in parents and trashed = false",
+            fields="files(id, name)"
+        ).execute()
+        files = results.get('files', [])
+        if not files:
+            print("🗑️ Keine Dateien zum Löschen gefunden.")
+        for file in files:
+            try:
+                service.files().delete(fileId=file['id']).execute()
+                print(f"🗑️ Datei gelöscht: {file['name']} (ID: {file['id']})")
+            except Exception as e:
+                print(f"⚠️ Fehler beim Löschen von Datei {file['name']} (ID: {file['id']}): {e}")
+    except Exception as e:
+        print(f"⚠️ Fehler beim Abrufen der Dateien zum Löschen: {e}")
 
 def upload_file(service, file_path, folder_id=None):
     file_metadata = {'name': os.path.basename(file_path)}
@@ -21,8 +29,11 @@ def upload_file(service, file_path, folder_id=None):
         file_metadata['parents'] = [folder_id]
 
     media = MediaFileUpload(file_path, resumable=True)
-    file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
-    print(f'✅ Datei hochgeladen: {file_path} (ID: {file.get("id")})')
+    try:
+        file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+        print(f'✅ Datei hochgeladen: {file_path} (ID: {file.get("id")})')
+    except Exception as e:
+        print(f"⚠️ Fehler beim Hochladen von {file_path}: {e}")
 
 def upload_folder(folder_path, folder_id=None):
     with open('token.pickle', 'rb') as token_file:
