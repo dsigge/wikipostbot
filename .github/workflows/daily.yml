@@ -10,12 +10,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-
-    - name: Alte Screenshots löschen
-      run: rm -rf screenshots/* assets/*
-  
     - name: Repository auschecken
       uses: actions/checkout@v3
+
+    - name: Alte Screenshots löschen
+      run: |
+        if [ -d screenshots ]; then rm -rf screenshots/*; fi
+        if [ -d assets ]; then rm -rf assets/*; fi
 
     - name: Python einrichten
       uses: actions/setup-python@v4
@@ -42,5 +43,15 @@ jobs:
       run: |
         echo "${{ secrets.GOOGLE_TOKEN_PICKLE }}" | base64 --decode > token.pickle
 
+    - name: Ordnerinhalte prüfen
+      run: |
+        echo "📁 Inhalt von screenshots/:"
+        ls -l screenshots/
+        echo "📁 Inhalt von posts/:"
+        ls -l posts/
+        echo "📁 Inhalt von assets/:"
+        ls -l assets/
+
     - name: Upload zu Google Drive
       run: python upload_to_drive.py
+
