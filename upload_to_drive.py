@@ -5,23 +5,38 @@ from googleapiclient.http import MediaFileUpload
 
 SCOPES = ['https://www.googleapis.com/auth/drive.file']
 
+def list_files_in_folder(service, folder_id):
+    results = service.files().list(
+        q=f"'{folder_id}' in parents and trashed = false",
+        fields="files(id, name)"
+    ).execute()
+    files = results.get('files', [])
+    return files
+
 def delete_all_files_in_folder(service, folder_id):
-    try:
-        results = service.files().list(
-            q=f"'{folder_id}' in parents and trashed = false",
-            fields="files(id, name)"
-        ).execute()
-        files = results.get('files', [])
-        if not files:
-            print("🗑️ Keine Dateien zum Löschen gefunden.")
+    files = list_files_in_folder(service, folder_id)
+    if not files:
+        print("🗑️ Keine Dateien zum Löschen gefunden.")
+    else:
+        print("🗑️ Dateien im Google Drive Ordner vor dem Löschen:")
         for file in files:
-            try:
-                service.files().delete(fileId=file['id']).execute()
-                print(f"🗑️ Datei gelöscht: {file['name']} (ID: {file['id']})")
-            except Exception as e:
-                print(f"⚠️ Fehler beim Löschen von Datei {file['name']} (ID: {file['id']}): {e}")
-    except Exception as e:
-        print(f"⚠️ Fehler beim Abrufen der Dateien zum Löschen: {e}")
+            print(f"  - {file['name']} (ID: {file['id']})")
+
+    for file in files:
+        try:
+            service.files().delete(fileId=file['id']).execute()
+            print(f"🗑️ Datei gelöscht: {file['name']} (ID: {file['id']})")
+        except Exception as e:
+            print(f"⚠️ Fehler beim Löschen von Datei {file['name']} (ID: {file['id']}): {e}")
+
+    # Nach dem Löschen nochmal checken
+    files_after = list_files_in_folder(service, folder_id)
+    if not files_after:
+        print("✅ Alle Dateien erfolgreich gelöscht.")
+    else:
+        print("⚠️ Einige Dateien konnten nicht gelöscht werden:")
+        for file in files_after:
+            print(f"  - {file['name']} (ID: {file['id']})")
 
 def upload_file(service, file_path, folder_id=None):
     file_metadata = {'name': os.path.basename(file_path)}
@@ -43,7 +58,15 @@ def upload_folder(folder_path, folder_id=None):
     if folder_id:
         delete_all_files_in_folder(service, folder_id)
 
-    for filename in os.listdir(folder_path):
+    local_files = os.listdir(folder_path)
+    if not local_files:
+        print(f"⚠️ Keine lokalen Dateien im Ordner '{folder_path}' zum Hochladen gefunden.")
+    else:
+        print(f"📁 Lokale Dateien im Ordner '{folder_path}':")
+        for f in local_files:
+            print(f"  - {f}")
+
+    for filename in local_files:
         full_path = os.path.join(folder_path, filename)
         if os.path.isfile(full_path):
             upload_file(service, full_path, folder_id)
