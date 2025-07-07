@@ -2,7 +2,7 @@ name: Wikipostbot Daily Workflow
 
 on:
   schedule:
-    - cron: '30 7 * * *'  # Täglich um 09:30 MESZ (07:30 UTC)
+    - cron: '30 5 * * *'  # Täglich um 09:30 MESZ (07:30 UTC)
   workflow_dispatch:      # Manuelles Starten möglich
 
 jobs:
