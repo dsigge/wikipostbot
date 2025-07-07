@@ -50,6 +50,13 @@ jobs:
         echo "📁 Inhalt von posts/:"
         ls -l posts/
 
+    - name: Inhalt prüfen vor Upload
+      run: |
+        echo "Inhalt posts:"
+        ls -l posts/
+        echo "Inhalt assets:"
+        ls -l assets/
+
     - name: Upload zu Google Drive
       run: python upload_to_drive.py
 
