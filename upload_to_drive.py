@@ -50,4 +50,4 @@ def upload_folder(folder_path, folder_id=None):
 
 if __name__ == '__main__':
     GOOGLE_DRIVE_FOLDER_ID = '19bJM0jfSKvfVerxHYdMP5o0HPvOtycs3'  # Deine Ordner-ID
-    upload_folder('assets', GOOGLE_DRIVE_FOLDER_ID)
+    upload_folder('posts', GOOGLE_DRIVE_FOLDER_ID)
