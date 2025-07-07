@@ -1,4 +1,5 @@
 import os
+import re
 import pickle
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
@@ -38,6 +39,10 @@ def delete_all_files_in_folder(service, folder_id):
         for file in files_after:
             print(f"  - {file['name']} (ID: {file['id']})")
 
+def extract_date_from_filename(filename):
+    match = re.search(r'\d{4}-\d{2}-\d{2}', filename)
+    return match.group(0) if match else "kein Datum gefunden"
+
 def upload_file(service, file_path, folder_id=None):
     file_metadata = {'name': os.path.basename(file_path)}
     if folder_id:
@@ -46,7 +51,8 @@ def upload_file(service, file_path, folder_id=None):
     media = MediaFileUpload(file_path, resumable=True)
     try:
         file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
-        print(f'✅ Datei hochgeladen: {file_path} (ID: {file.get("id")})')
+        date_str = extract_date_from_filename(os.path.basename(file_path))
+        print(f'✅ Datei hochgeladen: {file_path} (Datum: {date_str}) (ID: {file.get("id")})')
     except Exception as e:
         print(f"⚠️ Fehler beim Hochladen von {file_path}: {e}")
 
