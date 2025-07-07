@@ -2,10 +2,12 @@ import requests
 import re
 import pickle
 from googleapiclient.discovery import build
+import os
+ACCESS_TOKEN = os.environ.get('ACCESS_TOKEN')
+IG_USER_ID = os.environ.get('IG_USER_ID')
+
 
 # --- Facebook / Instagram Config ---
-ACCESS_TOKEN = 'EAAJdgaDJ9ssBPA9IVpyDJj24s73WlZCS1sqmc4xLANXZBulWrqFjUbA6tgpPQMUfWNOCrL9J3tJ4WcjZBrkMZA2H2n6c3DI43ZC2sVgh7gZBvT5okjORBHBqEUousi9nNjHMgon6SXe4Q4ZBwMvPbsrpaSDGIHH0268CVgpN1CtAH6YMYXEbQq8KwJFU3y26SQUjnb5aX6CciZBJsPKCZBpPZA4yZB9O6eXsp3WHViX2ygZD'
-IG_USER_ID = '17841475804937049'  # z.B. '17841475084937049'
 BASE_URL = 'https://graph.facebook.com/v17.0'
 
 # --- Google Drive Config ---
