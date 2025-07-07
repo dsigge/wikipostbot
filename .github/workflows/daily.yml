@@ -2,7 +2,7 @@ name: Wikipostbot Daily Workflow
 
 on:
   schedule:
-    - cron: '30 5 * * *'  # Täglich um 09:30 MESZ (07:30 UTC)
+    - cron: '30 5 * * *'  # Täglich um 07:30 UTC (09:30 MESZ)
   workflow_dispatch:      # Manuelles Starten möglich
 
 jobs:
@@ -62,9 +62,6 @@ jobs:
       env:
         ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
         IG_USER_ID: ${{ secrets.IG_USER_ID }}
+        GOOGLE_DRIVE_FOLDER_ID: ${{ secrets.GOOGLE_DRIVE_FOLDER_ID }}
       run: |
         python post_carousel.py
-
-
-      
-
