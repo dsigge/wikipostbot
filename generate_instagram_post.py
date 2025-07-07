@@ -4,7 +4,25 @@ import os
 
 def embed_into_template(input_path, output_path):
     template_size = (1080, 1350)
-    background = Image.new("RGB", template_size, color=(255, 255, 255))
+
+        # Wochentag als Zahl (0=Montag, 6=Sonntag)
+    weekday = date.today().weekday()
+
+    # Definiere Farben für jeden Wochentag (hell und pastellig)
+    weekday_colors = [
+        (255, 230, 230),  # Montag: helles Rosa
+        (230, 255, 230),  # Dienstag: helles Grün
+        (230, 230, 255),  # Mittwoch: helles Blau
+        (255, 255, 230),  # Donnerstag: helles Gelb
+        (255, 230, 255),  # Freitag: helles Pink
+        (230, 255, 255),  # Samstag: helles Türkis
+        (245, 245, 245)   # Sonntag: helles Grau
+    ]
+    
+    background_color = weekday_colors[weekday]
+
+    # Hintergrund mit der entsprechenden Farbe anlegen
+    background = Image.new("RGB", template_size, color=background_color)
 
     # Screenshot laden
     screenshot = Image.open(input_path)
