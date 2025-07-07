@@ -40,6 +40,9 @@ if __name__ == "__main__":
     today = date.today().strftime("%Y-%m-%d")
     names = ["schon_gewusst", "was_geschah", "verstorbene", "nachrichten"]
 
+    # Ordner 'posts' anlegen, falls nicht existent
+    os.makedirs("posts", exist_ok=True)
+
     for name in names:
         input_file = f"screenshots/screenshot_{name}_{today}.png"
         output_file = f"posts/post_{name}_{today}.png"
