@@ -3,6 +3,7 @@ import re
 import pickle
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
+from google.auth.transport.requests import Request
 
 SCOPES = ['https://www.googleapis.com/auth/drive.file']
 
@@ -76,6 +77,20 @@ def upload_folder(folder_path, folder_id=None):
         full_path = os.path.join(folder_path, filename)
         if os.path.isfile(full_path):
             upload_file(service, full_path, folder_id)
+
+def get_credentials():
+    creds = None
+    if os.path.exists('token.pickle'):
+        with open('token.pickle', 'rb') as token_file:
+            creds = pickle.load(token_file)
+    # Token refreshen, falls nötig
+    if creds and creds.expired and creds.refresh_token:
+        print("♻️ Token ist abgelaufen, erneuere Token...")
+        creds.refresh(Request())
+        with open('token.pickle', 'wb') as token_file:
+            pickle.dump(creds, token_file)
+        print("✅ Token erfolgreich erneuert.")
+    return creds
 
 if __name__ == '__main__':
     GOOGLE_DRIVE_FOLDER_ID = '19bJM0jfSKvfVerxHYdMP5o0HPvOtycs3'  # Deine Ordner-ID
