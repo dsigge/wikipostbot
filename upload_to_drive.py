@@ -7,6 +7,20 @@ from google.auth.transport.requests import Request
 
 SCOPES = ['https://www.googleapis.com/auth/drive.file']
 
+def get_credentials():
+    creds = None
+    if os.path.exists('token.pickle'):
+        with open('token.pickle', 'rb') as token_file:
+            creds = pickle.load(token_file)
+    # Token refreshen, falls nötig
+    if creds and creds.expired and creds.refresh_token:
+        print("♻️ Token ist abgelaufen, erneuere Token...")
+        creds.refresh(Request())
+        with open('token.pickle', 'wb') as token_file:
+            pickle.dump(creds, token_file)
+        print("✅ Token erfolgreich erneuert.")
+    return creds
+
 def list_files_in_folder(service, folder_id):
     results = service.files().list(
         q=f"'{folder_id}' in parents and trashed = false",
@@ -58,8 +72,7 @@ def upload_file(service, file_path, folder_id=None):
         print(f"⚠️ Fehler beim Hochladen von {file_path}: {e}")
 
 def upload_folder(folder_path, folder_id=None):
-    with open('token.pickle', 'rb') as token_file:
-        creds = pickle.load(token_file)
+    creds = get_credentials()
     service = build('drive', 'v3', credentials=creds)
 
     if folder_id:
@@ -77,20 +90,6 @@ def upload_folder(folder_path, folder_id=None):
         full_path = os.path.join(folder_path, filename)
         if os.path.isfile(full_path):
             upload_file(service, full_path, folder_id)
-
-def get_credentials():
-    creds = None
-    if os.path.exists('token.pickle'):
-        with open('token.pickle', 'rb') as token_file:
-            creds = pickle.load(token_file)
-    # Token refreshen, falls nötig
-    if creds and creds.expired and creds.refresh_token:
-        print("♻️ Token ist abgelaufen, erneuere Token...")
-        creds.refresh(Request())
-        with open('token.pickle', 'wb') as token_file:
-            pickle.dump(creds, token_file)
-        print("✅ Token erfolgreich erneuert.")
-    return creds
 
 if __name__ == '__main__':
     GOOGLE_DRIVE_FOLDER_ID = '19bJM0jfSKvfVerxHYdMP5o0HPvOtycs3'  # Deine Ordner-ID
